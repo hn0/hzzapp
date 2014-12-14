@@ -1,4 +1,5 @@
 log
+lib/*.pyc
 passed.log
 sent.log
 vimedit.vim
@@ -7,3 +8,7 @@ sentlogclean
 runlog.log
 TODO
 msgtext.txt
+.settings/*
+.project
+.pydevproject
+lib/ItemObject.pyc

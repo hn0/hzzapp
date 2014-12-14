@@ -1,3 +1,4 @@
+#_*_ coding: utf-8 _*_
 """ Class for applaying to each item from rss feed,
 	Implemented for multithreading fasion
 """
@@ -10,6 +11,13 @@ import smtplib
 from HTMLParser import HTMLParser
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+class ItemObjectException(Exception):
+	def __init__(self, msg, instanceSpecific=False):
+		self.value = msg
+		self.breakOthers = not instanceSpecific
+	def __str__(self):
+		return repr(self.value)
 
 
 class DetailsPageParser(HTMLParser):
@@ -61,21 +69,54 @@ class DetailsPageParser(HTMLParser):
 class ItemObject(threading.Thread):
 	
 #FIXME: create variables that are needed for multithreading and see what return values will be needed
-		
-	def __init__(self, url, title, scriptpath, sendmail):
+	
+	def __init__(self, url, title, configObj, workpath):
 		threading.Thread.__init__(self)
-		self.scriptpath = scriptpath
-		self.sendMail = sendmail
-		self.sent = False
+		self.Sent = False
+		self.cfg = configObj
+		
+		#user data and required configuration values
+		try:
+			self.UNAME, self.MYEMAIL, self.msgtemplate = self.cfg.Read('user', username=None, emailaddress=None, msgtemplate=None).values()
+			self.smptServer = self.cfg.Read('smtp', server=None)
+		except:
+			raise ItemObjectException('User section of config file contains error')
+			
+		#optional configuratioin values
+		#FIXME: read optional configuration files and create html parser obj?
+		
+		#class specific values
+		self.targetEmailList = []
 		self.url = url
-		self.id = uuid.uuid1()
-		self.targetMailList = []
 		self.TITLE = title
-		self.CVURL = 'http://www.zlatnodoba.hr/misc/cv.php?%s' % urllib.urlencode({'id': self.id})
+		self.id = uuid.uuid1()
 		self.msgVariablePattern = re.compile(r"({\w+})")
-
-
+		
+		
+		#for dynamic cv addresses sutomatically append guid value as id value
+		#CVURL is anyway dependent on occurance in the message
+		try:
+			self.CVURL = self.cfg.Read('user', cvurl=None)
+			if self.CVURL != None and self.CVURL[-4:] == '.php':
+				self.CVURL += '?%s' % urllib.urlencode({'id':self.id})
+		except:
+			pass
+		
+	
+	
 	def run(self):
+		#create parser obj
+		#FIXME: transfer configuratiion somehow
+		parseObj = DetailsPageParser()
+		
+		#try to retrive details page
+		
+		
+		#check if email will be sent
+		self.sendMessage()
+	
+	
+	def runOLD(self):
 		parseObj = DetailsPageParser()
 		try:
 			res = urllib.urlopen(self.url)
@@ -100,6 +141,14 @@ class ItemObject(threading.Thread):
 
 
 	def sendMessage(self):
+		
+		#FIXME: pass type of the message
+		#print len(self.targetEmailList)
+		
+		
+		self.prepareApplyMessage()
+		
+		return False
 		if not self.sendMail:
 		#print "message sending disabled"
 			return True
@@ -150,6 +199,16 @@ class ItemObject(threading.Thread):
 		else:
 			return False
 
+	def prepareApplyMessage(self):
+		""" Prepeare regular message, for position application
+		"""
+		
+		print self.msgtemplate
+		
+		
+	def prepareHzzMessage(self):
+		print 'prepare spectial hzz message'
+
 
 	def putContent(self, txt, htmlWrap):
 		""" Replace variables in msg text with real values
@@ -170,3 +229,5 @@ class ItemObject(threading.Thread):
 			return '<p>{0}</p>\n'.format(txt)
 		else:
 			return txt.replace('<br>', '\n')
+
+	

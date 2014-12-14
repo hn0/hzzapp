@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+!/usr/bin/python2.7
 
 """
 	No real explanation, just gather all links from hzz page and fill rtf file with details
@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ElementTree
 from datetime import date, timedelta, datetime
 
 
-sendMail = True 
+sendMail = False
 #store all relevant files in app root folder
 scriptpath = '/home/user/Documents/hzzapp/'
 urls = ["http://burzarada.hzz.hr/rss/rsskat1002.xml", "http://burzarada.hzz.hr/rss/rsskat1003.xml", "http://burzarada.hzz.hr/rss/rsskat1014.xml", "http://burzarada.hzz.hr/rss/rsskat1018.xml", "http://burzarada.hzz.hr/rss/rsskat1011.xml"]
