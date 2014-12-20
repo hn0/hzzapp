@@ -29,9 +29,10 @@ import tempfile
 import re
 import xml.etree.ElementTree as ElementTree
 from os import path
-from datetime import time, timedelta, datetime
+from datetime import timedelta, datetime
 from lib.ItemObject import ItemObject, ItemObjectException
 from lib.config import config
+import time
 
 #global variables
 workpath = path.dirname(__file__) #always use path..join so paths relative to the scripts folder can be used as well
@@ -68,13 +69,17 @@ def hzzapp_main():
         else:
             seekTimeSpan = datetime.now() - datetime.strptime(line.split('\t')[0], "%d/%m/%Y %H:%M:%S")
             #FOR DEVELOPMENT ONLY
-            seekTimeSpan = timedelta(days=5)
+            seekTimeSpan = timedelta(days=30)
             print 'time delta manually set'
         
         #open sent log
         #FIXME: parse enteries from sent log?
         #Maybe sent log should not fall into category of errors with log file but this is point that can be addressed later
         sentfp = open(path.join(workpath, cfg.Read('app',sentlog=None)), 'a+')
+        
+        
+        #extension, include passed items as well
+        passedfp = open(path.join(workpath, cfg.Read('app', passedlog=None)), 'a+')
         
     except:
         print >> sys.stderr, 'Could not open necessary log files, exiting'
@@ -130,6 +135,8 @@ def hzzapp_main():
                         
                         if id and True:
                             items.append([id, link, item.find('subject').text])
+                            if cfg.Read('DEBUG'):
+                                break;
                                             
                 except Exception as ex:
                     if cfg.Read('DEBUG'):
@@ -160,7 +167,16 @@ def hzzapp_main():
                             while t.is_alive():
                                 time.sleep(0.01)
                             t.join()
+                            #check for possile errors
+                            if t.errorMsg != None:
+                                print 'see how it should be dealted with object errors'
+                            
                             #FIXME: inspect results and write sent log, but first deal with run command
+                            #process results (two logs, sent and not sent, simple afterwards you will deal with details)
+#                             if t.Sent:
+#                                 print 'write create sent log'
+#                             else:
+#                                 print 'open passed log'
             
             if noErrors: #dont append source result msg
                 appout.append("In source: {0} there were: {1} items; {2} new items found; {3} application sent".format(src, totalItem, len(items), len([x for x in threads if x != None and x.Sent == True]) ))

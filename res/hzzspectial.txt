@@ -1,26 +1,38 @@
 Poštovani,
 
+Pregledavajući objavljene oglase na stranicama hzz-a, moja aplikacija naišla je na još jedan "privatni", ne transparentni, oglas objavljen pod naslovom {TITLE} (objavljen na url-u: {URL}), pri kojem stoji Vaše ime kao ime kontakt osobe.
 
-Moja skripta, pregledavajuči oglase objavljene na stranicama hzz-a naišla je na "privatn" oglas PUT HERE TRANSPERECY
+Ovim putem želio bi apelirati, kako bi bilo lijepo od Vas kada bi ste prošli bazom nezaposlenih te proslijedili kontakt informacije potencijalnim kandidatima. 
 
-pod kojim ste Vi osoba za kontakt.
+Jednakost svih kandidata bio bi prvi korak da se maknemo iz feudalizma prema stvarnoj demokraciji, pri čemu bi možda bi netko neutralan stvarno i mogao reći kako je dobio pomoć od zavoda za zapošljavanje.
+ 
 
-Radi se o oglasu {TITLE} dostupnom na {HZZURL}
+Dodatno, iskoristio bi priliku te zamolio za pomoć odnosno bilo kakvu informaciju koja bi mogla riješiti moj status te pomoći mi da se riješim svoje spreme.
 
-Želja mi Vas je podsjetiti kao ukoliko odgovoaram uvijetima natječaja, te ukoliko oglas nije već rezerviran kako bi bilo lijepo od Vas da pogledate u bazu podataka te proslijedite informaciju svim nezaposlenima koji su potencijalni  posloprimci. Vjerujem kako bbi lista osoba mogla biti poprilično duga, ali u vremenu kada je sve informatizirano to ne bi smijel opredstavljati problem.
+U kratko, već više od 4 godine nisam u mogućnosti dobiti zaposlenje, barem ne temeljem svoje spreme i svojih mogučnosti bez veza i rođaka na pozicijama. 
+
+Nažalost službeno sam završio program po BOLONJI, što samo po sebi ne bi smjelo predstavljati prolem, već osobno mislim kako je veći problem kako sam tijekom orazovanja morao kupovati slikovnice kao "službenu literaturu" iz koje i trebao učiti ili činjenica kako fakultet koji sam završio se razbaciva lažnim potvrdama i dijeljenjem diploma rodbini, ali to je problem za neku drugu poruku.
+
+Tako, svjestan svoje situacije, ne preostaje mi ništa drugo nego da sam sebe zaposlim, pri čemu nažalost nemam sredstava niti rođaka kako bi mogao razmišljati o samozaposlenju u struci.
 
 
-Takđer bi iskoristio priliku te upitao za informaciju.
+Nažalost, ne posjedujem sredstva kako bi sam sebe zaposlio u struci za koju sam se obrazovao već jedino mogu razmišljati u smjeru poketanja malog NEKOG KURCA S DEVELOPMENTOM aplikacija pri ćemu sedstva za samozapošljavanje koja dodjeljuje zavod svakako bi bila dobodošla opcija.
 
-Ukratko moja vjerojatnost dobivanja zaposlenja trenutno je 0 i kao takav još dugo vremena ostajem na burzi rada
+Tužno je kada i sama pomisao da pokušam se kandidiati za dodjelu ovih sredstava padaju u vodu jer bi me ista obvezala na plačanje dopinosa temeljem stručne spreme što bi automatski potencijalno dodjeljena sredstva učinilo vrlo neisplativim.
 
-S druge strane spreman sam sam sebe zaposliti (od sam boli glava). Nažalost ne posjedujem financijska sredstva s kojima bi uopće mogao pomišljati o samozaposlenju u struci, a kako nemam ni rođaka u državnoj upravi (u protivnom, slažete se kako ne bi ni pisao ovu poruku), jedina opcija mi je raditi kao developer. 
+Sama činjenica kako bi radio kao developer NEKI KUAC POVEZIVANJE S STURKOM
+također, iako plaćeno moje službeno obrazovanje nije mi ni najmanje pomoglo u činjenici kako sam postao developer.
+Te ovaku diskriminaciju temeljem svoje spreme ipak nisam oćekivao.
 
-Tužno, ali u ovoj situaciji, moje obrazovanje nije ni najmanje pomoglo pri NEKOM KURCU, te mi isto čini potencijalna sredstva koja se dodjeljuju kroz program samozapošljavanja u potpunosti neisplativa (zbog doprinosa koje bi morao plačati temeljem beskorisnog papira). Situacija je bajna te smatram ovo čistom diskriminacijom 
+
+
+Moje je pitanje jednostavno, te Vas molim za pomoć u obliku bilo kakve inforrmacije o mogućnosti poništavanja moje spreme
 
 Priznajem grešku, te sam svjestan kako gorak okus prevare kroz obrazovanje neču moći lako skinuti s usta ali neću odustati dok se ta greška barem ne poništi 
 
-Te je moje pitanje jednostavno i molim Vas ukoliko znate kako bi mogao poništiti svoju stučnu spremu.
+jer u protivnom, negdje u kutu sobe će sjediti osoba za starim računalom koje će se koristiti uzaludno na slanje poruka, kada bi se u isto vrijeme moglo pametnije iskoristiti za hranjenje uhljebljenih drzavnih guzica.
 
+
+DONT FORGET TO PUT IN UHLJEBI!!!!
 
 Lijepi pozdrav,<br>{UNAME}

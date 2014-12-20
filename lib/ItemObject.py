@@ -8,9 +8,11 @@ import urllib
 import threading
 import re
 import smtplib
-from HTMLParser import HTMLParser
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from os import path
+from lib.DetailsPageParser import DetailsPageParser
+
 
 class ItemObjectException(Exception):
 	def __init__(self, msg, instanceSpecific=False):
@@ -20,52 +22,6 @@ class ItemObjectException(Exception):
 		return repr(self.value)
 
 
-class DetailsPageParser(HTMLParser):
-
-	def __init__(self):
-		""" Define target tags and elements that needs to be parsed
-		"""
-		self.valid = True #by default assume that this is valid vaccenies (this variable should take into consideration number of found email addresses)
-		HTMLParser.__init__(self)
-		self.targetMails = []
-		self.checkString = '' #use this for string matching (partial match will do)
-		#for pattern refer to: http://nbviewer.ipython.org/github/rasbt/python_reference/blob/master/tutorials/useful_regex.ipynb
-		self.emailPattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
-
-	
-	def handle_starttag(self, tag, attrs):
-		""" Set search string if tag + attriburte matces, searches for e-mail address in tags
-		"""
-		if tag == 'span' or tag == 'a':
-			for atr in attrs:
-				if atr[0] == 'href':
-					if self.emailPattern.match(atr[1][7:]):
-						self.addemail(atr[1][7:]) #parse only mailto: links
-				elif atr[0] == 'id' and atr[1] == 'lblVrstaZaposlenja':
-					#set search string	
-					self.checkString = 'osposobljavanje'
-
-	def handle_endtag(self, tag):
-		pass
-
-	def handle_data(self, data):
-		""" React only to search string rendering page invalid if match is found
-		"""
-		if self.checkString != '':
-			if data.find(self.checkString) > -1:
-				self.valid = False
-			self.checkString = '' #reset search string		
-
-		#next search all content for email address
-		addresses = self.emailPattern.search(data)
-		if addresses:
-			self.addemail(addresses.group()) #add just first email address
-
-	def addemail(self, address):
-		if address not in self.targetMails:
-			self.targetMails.append(address)
-	
-
 class ItemObject(threading.Thread):
 	
 #FIXME: create variables that are needed for multithreading and see what return values will be needed
@@ -74,10 +30,14 @@ class ItemObject(threading.Thread):
 		threading.Thread.__init__(self)
 		self.Sent = False
 		self.cfg = configObj
-		
+		self.workpath = workpath
+		self.errorMsg = None #FIXME: dont forget about exceptions
+		self.PropObj = None
+				
 		#user data and required configuration values
 		try:
 			self.UNAME, self.MYEMAIL, self.msgtemplate = self.cfg.Read('user', username=None, emailaddress=None, msgtemplate=None).values()
+			self.msgtemplate = path.join(self.workpath, self.msgtemplate)
 			self.smptServer = self.cfg.Read('smtp', server=None)
 		except:
 			raise ItemObjectException('User section of config file contains error')
@@ -106,38 +66,28 @@ class ItemObject(threading.Thread):
 	
 	def run(self):
 		#create parser obj
-		#FIXME: transfer configuratiion somehow
+		#FIXME: configure paser obbject
 		parseObj = DetailsPageParser()
 		
-		#try to retrive details page
+		test = "none"
 		
-		
-		#check if email will be sent
-		self.sendMessage()
-	
-	
-	def runOLD(self):
-		parseObj = DetailsPageParser()
+		#try to retrive details page, fixme: move to function there is a problem with socket connection
 		try:
 			res = urllib.urlopen(self.url)
 			parseObj.feed(res.read())
-		except Exception as e:
-			#print e
-			pass
-
-		#assign email addresse form parse objec regarldess will they be used or not
-		self.targetMailList = parseObj.targetMails
+		except Exception as ex:
+			self.errorMsg = 'Cannot retrieve details page'
+			test = ex
 		
-		#now check if message can be sent
-		if parseObj.valid and len(self.targetMailList) > 0:
-			self.sent = self.sendMessage()
+		#extract message properties and determine object type
+		self.PropObj = parseObj.prop
 		
-
-	def Results(self):
-		""" Return list of resulst
-		Send atempt result  GUID Title Listof addreesses
-		"""
-		return  self.sent, self.id, self.TITLE, self.url, ','.join(self.targetMailList)
+		
+		print 'determine Item type based on prop object'
+		
+		#check if email will be sent IN PARSER OBJECT CONSTURCT EMAIL ADDRESS FOR HZZ!
+		#FIME: etract information from parsed object
+		#self.sendMessage()		
 
 
 	def sendMessage(self):
@@ -145,8 +95,18 @@ class ItemObject(threading.Thread):
 		#FIXME: pass type of the message
 		#print len(self.targetEmailList)
 		
+		#here should go code that decides which type of msg will be created
 		
-		self.prepareApplyMessage()
+		msg = None
+		
+		msg = self.readMailTemplate(self.msgtemplate)
+		
+		#test for the msg and set fields like Subject, to, from
+		if msg != None:
+			print(msg)
+		else:
+			print('SHIT')
+		
 		
 		return False
 		if not self.sendMail:
@@ -158,30 +118,13 @@ class ItemObject(threading.Thread):
 
 		if len(self.targetMailList) > 0:
 			
-			msgTXT = ""
-			msgHTML = ""
-
-			#forget best practices hardcode filename in here
-			with open(self.scriptpath +  'msgtext.txt', 'r') as fp:
-				for line in fp:
-					msgTXT += self.putContent(line, False)
-					msgHTML += self.putContent(line, True) 
-
-			#print msgHTML
-			#print msg
+					#TODO: add this information as well
 			
 			msg = MIMEMultipart('alternative')
 		 	msg['Subject'] = 'Javljanje na natjecaj ' + self.TITLE
 			msg['From'] = 'Hrvoje Novosel<hnovosel@live.com>'	
 			msg['To'] = ', '.join(self.targetMailList)
 
-			if msgTXT != '':
-				partTXT = MIMEText(msgTXT, 'plain')
-				msg.attach(partTXT)			
-
-			if msgHTML != '':
-				partHTML = MIMEText(msgHTML, 'html')
-				msg.attach(partHTML)
 
 	
 			#create smtp obj, use zlatnodoba for now!
@@ -199,16 +142,36 @@ class ItemObject(threading.Thread):
 		else:
 			return False
 
-	def prepareApplyMessage(self):
-		""" Prepeare regular message, for position application
+	def readMailTemplate(self, templname):
+		""" reads template and returns multipart objec containing text and html parts
 		"""
+		try:
+			fp = open(templname, 'r')
+		except:
+			return None
 		
-		print self.msgtemplate
+		msgTXT = ""
+		msgHTML = ""
 		
+		for line in fp:
+			msgTXT += self.putContent(line, False)
+			msgHTML += self.putContent(line, True)
 		
-	def prepareHzzMessage(self):
-		print 'prepare spectial hzz message'
-
+		fp.close()
+		
+		if msgTXT != "" and msgHTML != "":
+			msg = MIMEMultipart('alternative')
+			
+			parttxt = MIMEText(msgTXT, 'plain')
+			msg.attach(parttxt)
+			
+			parthtml = MIMEText(msgHTML, 'html')
+			msg.attach(parthtml)
+			
+			return msg
+		
+		return None #default behaviour
+	
 
 	def putContent(self, txt, htmlWrap):
 		""" Replace variables in msg text with real values
@@ -230,4 +193,3 @@ class ItemObject(threading.Thread):
 		else:
 			return txt.replace('<br>', '\n')
 
-	
