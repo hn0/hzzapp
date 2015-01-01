@@ -44,7 +44,9 @@ class config:
     def Read(self, section, **keys):
         #special case debug, for simplicity define here, maybe it should go to configuration file
         if section.upper() in ['DEBUG', 'DEVELOPMENT']:
-            return True
+            return False
+        elif section.upper() == 'SENDMAIL':
+            return False
         
         #wrap retrive methods, return default value if passed, otherwise raise exception
         try:

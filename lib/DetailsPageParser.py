@@ -1,3 +1,4 @@
+#_*_ coding: utf-8 _*_
 """
     FIXME: WRITE SOME DESCRRIOPTIOJN
 
@@ -7,7 +8,7 @@
 """
 from HTMLParser import HTMLParser
 import re
-
+import unicodedata
 
 class SearchObject:
     """ Abstract class for search objects
@@ -54,6 +55,25 @@ class KontaktSearch(SearchObject):
     def BreakTag(self):
         return 'hr' #it does seem that every section is bbroken with hr tag
 
+
+class HzzSpectialSearch(SearchObject):
+    
+    def __init__(self, resTarget):
+        self.resTarget = resTarget
+        self.namePattern = re.compile('([a-zA-Z]+)\s([a-zA-Z]+)')
+    
+    def Inspect(self, data):        
+        matchstr = unicodedata.normalize('NFKD', unicode(data, 'utf-8')).encode('ascii', 'ignore')
+        res = self.namePattern.search(matchstr)
+        if res: #fixme, cconver to search!!!
+            self.resTarget.Add("{0}.{1}@hzz.hr".format(res.group(1).lower(), res.group(2).lower()), 'email')
+            self.resTarget.Add("{0}.{1}@hzz.hr".format(res.group(2).lower(), res.group(1).lower()), 'email')
+            
+    
+    def BreakTag(self):
+        return 'span' #this field is contained uunder span element for now
+
+
 #Enumerations for oglas types
 class ItemProperties():
 #     types = ['email', 'postoffice']
@@ -95,7 +115,7 @@ class DetailsPageParser(HTMLParser):
         
         #search list
         self.idMarkerTags = {'lblVrstaZaposlenja': OsposoljavanjeSearch(self.prop), 'lblNazivPoslodavca' : PoslodavacSearch(self.prop), \
-                             'lblKontaktKandidataText': KontaktSearch(self.prop)} 
+                             'lblKontaktKandidataText': KontaktSearch(self.prop), 'lblSavjetodavac': HzzSpectialSearch(self.prop)} 
         
         self.searchMarker = None
 
