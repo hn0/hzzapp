@@ -60,6 +60,9 @@ def hzzapp_main():
     #sent log is also essential for application operating 
     #additionally retrive last launched date as well as list of applied vaccineis
     try:
+        #set default timesearch variable
+        seekTimeSpan = timedelta(days=cfg.Read('app', searchinterval=15))
+        
         #if logfile doesnt exist, create one
         logfp = open(path.join(workpath,cfg.Read('app', logfilename='log')), 'a+')
         logfp.seek(0)
@@ -69,13 +72,12 @@ def hzzapp_main():
         for line in logfp:
             pass
         
-        if line == "":
-            seekTimeSpan = timedelta(days=cfg.Read('app', inittimespan=1))
-        else:
-            seekTimeSpan = datetime.now() - datetime.strptime(line.split('\t')[0], dateFormat)
-            #FOR DEVELOPMENT ONLY
-#             seekTimeSpan = timedelta(days=30)
-#             print 'time delta manually set'
+        
+        #extend search interval if needed (to include time of the last app run)
+        if line != "":
+            if (datetime.now() - datetime.strptime(line.split('\t')[0], dateFormat)) > seekTimeSpan:
+                seekTimeSpan = datetime.now() - datetime.strptime(line.split('\t')[0], dateFormat)
+                
         
         #open sent log (create files and append variable names if files are not present)
         logheaderstr = "\t".join(['ItemID', 'HzzID', 'Subject', 'ItemClass', 'Employee', 'emali', 'contactinfo'])
@@ -94,7 +96,7 @@ def hzzapp_main():
             for line in sentfp:
                 parts = line.split('\t')
                 try:
-                    if seekTimeSpan + seekTimeSpan + timedelta(days=2) > datetime.now() - datetime.strptime(parts[0], dateFormat):
+                    if (datetime.now() - datetime.strptime(parts[0], dateFormat)) < (seekTimeSpan + timedelta(days=1)):
                         skipidvalues.append(parts[2])
                 except:
                     pass #dont rise huss if date parsing fails
@@ -106,7 +108,7 @@ def hzzapp_main():
             for line in passedfp:
                 parts = line.split('\t')
                 try:
-                    if seekTimeSpan + timedelta(days=2) > datetime.now() - datetime.strptime(parts[0], dateFormat):
+                    if (datetime.now() - datetime.strptime(parts[0], dateFormat)) < (seekTimeSpan + timedelta(days=1)):
                         skipidvalues.append(parts[2])
                 except:
                     pass #dont rise huss if date parsing fails
@@ -124,6 +126,7 @@ def hzzapp_main():
     
     sources = ""
     appout = []
+    
     
     #go througth sources
     try:
@@ -163,13 +166,13 @@ def hzzapp_main():
                         id = x #keep last id
                     #time test condition
                     if id:
-                        #next is test for already sent items, test is disabled in debbug mode
-                        #different conditions for first run and consiquential runs
-#                         print len(skipidvalues)
-                        if (len(skipidvalues) > 0 and id not in skipidvalues) or (len(skipidvalues) == 0 and (currentTime - datetime.strptime(item.find('pubDate').text, "%d.%m.%Y")).days <= seekTimeSpan.days):
+                        #check if item is applicatibble for parsing
+                        #two constrains, must fall into search timespan (rounded on nearest day, assholes from hzz dont provide time)
+                        #and id is not in skiplist
+                        if (currentTime - datetime.strptime(item.find('pubDate').text, "%d.%m.%Y")).days <= seekTimeSpan.days and id not in skipidvalues:
                             items.append([id, link, item.find('subject').text])
-                            if cfg.Read('DEBUG'):
-                                break;
+#                             if cfg.Read('DEBUG'):
+#                                 break;
                                             
                 except Exception as ex:
                     if cfg.Read('DEBUG'):
@@ -210,8 +213,10 @@ def hzzapp_main():
                                 
                                 writeLogEntery(resDest, resStr)
                                 
-                            #else:
-                                #leave possibility of item level error loging
+                            else:
+                                #print error if flag is set in config file
+                                if cfg.Read('app', printerrors=False):
+                                    print t.errorMsg
                             
             
             if noErrors: #dont append source result msg

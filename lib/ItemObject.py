@@ -96,9 +96,9 @@ class ItemObject(threading.Thread):
 			parseObj.feed(res.read())
 			parsed = True
 		except Exception as ex:
-			self.errorMsg = 'Cannot retrieve details page'
-			if self.cfg.Read('DEBUG'):
-				print ex
+			self.errorMsg = 'Parsing error: ' + ex.__str__()
+# 			if self.cfg.Read('DEBUG'):
+# 				print dir(ex)
 		
 		#extract message properties and determine object type
 		self.PropObj = parseObj.prop
@@ -171,7 +171,7 @@ class ItemObject(threading.Thread):
 			msg['From'] = self.MYEMAIL
 			#targets
 			#FIXME give additional check for development?
-			#self.PropObj.emails = ['hrvoje@zlatnodoba.hr']
+			self.PropObj.emails = ['hrvoje@zlatnodoba.hr']
  			msg['To'] = ', '.join(self.PropObj.emails)
 			
 			#add attahments if any
@@ -198,13 +198,16 @@ class ItemObject(threading.Thread):
 					server.sendmail(msg['From'], msg['To'], msg.as_string())
 					self.Sent = True
 				except Exception as ex:
-					if self.cfg.Read('DEBUG'):
-						print ex
-					self.errorMsg = 'unable to send message'
+					self.errorMsg = 'Mail server error: ' + ex.__str__()
 					
 			else:
 				if self.cfg.Read('DEBUG'):
+					pass				
 					self.Sent = True #for debbugging purposes
+
+		else:
+			#store information on message error
+			self.errorMsg = 'Cannot create e-mail message'
 			
 		
 
@@ -212,8 +215,9 @@ class ItemObject(threading.Thread):
 		""" reads template and returns multipart objec containing text and html parts
 		"""
 		try:
-			fp = open(templname, 'r')
-		except:
+			fp = open(path.join(self.workpath, templname), 'r')
+		except Exception as ex:
+# 			print ex
 			return None
 		
 		msgTXT = ""

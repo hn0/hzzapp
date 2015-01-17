@@ -46,7 +46,7 @@ class config:
         if section.upper() in ['DEBUG', 'DEVELOPMENT']:
             return False
         elif section.upper() == 'SENDMAIL':
-            return False
+            return True
         
         #wrap retrive methods, return default value if passed, otherwise raise exception
         try:
