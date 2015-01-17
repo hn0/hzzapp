@@ -1,0 +1,9 @@
+Ovo je samo primjer template poruke, prije pokretanja aplikacije zamijenite ovaj tekst s tekstom po zelji
+
+Poštovani,
+
+Javljem se na natjecaj pod naslovom "{TITLE}", objavljenim pod naslovom ...
+
+Zivotopis mozete pronaci na URL-u {CVURL}
+ 
+Lijepi pozdrav,<br>{UNAME}
