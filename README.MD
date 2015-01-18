@@ -1,7 +1,6 @@
 Hzz app
 ======================
 
-Intro, my personal reasons
 This application was developed as an answer to the personal need for easy and automatic way of applying to the job position tenders. Application is in testing and early beta stage, this application will, according to the settings in configuration file go throughout job tenders from hzz's rss feed list and automatically send a job application e-mail message. Sample templates of e-mail messages can be found in res folder, although any text document can be used as e-mail message template. After first run application creates a log of tenders to which e-mail message was sent to ensuring that for no item message is sent more than once. If for any reason log files are moved or corrupted(edited) application may send more than one message for the same job tender.
 
 As the main objective of this application has been achieved, depending on the usefulness and demand, further improvements of the code can be expected. To name some of them: proper filtering engine, detailed items classification, simple UI and huge usability improvements, better error handling and enabling attachment support for email messages. 
